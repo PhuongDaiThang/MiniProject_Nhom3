@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="primary">#90CAF9</color>
+    <color name="primary_variant">#1976D2</color>
+    <color name="secondary">#03DAC6</color>
+
+    <!-- Status Colors - Dark -->
+    <color name="bg_status_available">#1B3320</color>
+    <color name="text_status_available">#81C784</color>
+    <color name="bg_status_rented">#372121</color>
+    <color name="text_status_rented">#E57373</color>
+
+    <!-- UI Colors - Dark -->
+    <color name="card_background">#1E1E1E</color>
+    <color name="screen_background">#121212</color>
+    <color name="text_primary">#FFFFFF</color>
+    <color name="text_secondary">#B0B0B0</color>
+    <color name="divider_color">#333333</color>
+</resources>

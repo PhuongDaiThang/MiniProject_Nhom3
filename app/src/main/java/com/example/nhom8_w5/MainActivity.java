@@ -29,16 +29,14 @@ import com.google.android.material.materialswitch.MaterialSwitch;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
-import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements RoomAdapter.OnItemClickListener {
 
     private RecyclerView rvRooms;
     private ExtendedFloatingActionButton fabAdd;
-    private ArrayList<Room> roomList;
+    private RoomRepository repository;
     private RoomAdapter adapter;
     private boolean isDarkMode = false;
     private final DecimalFormat decimalFormat = new DecimalFormat("###,###,###");
@@ -59,11 +57,10 @@ public class MainActivity extends AppCompatActivity implements RoomAdapter.OnIte
         initViews();
         
         if (savedInstanceState != null) {
-            roomList = (ArrayList<Room>) savedInstanceState.getSerializable("room_list");
-        }
-        
-        if (roomList == null) {
-            initData();
+            ArrayList<Room> savedList = (ArrayList<Room>) savedInstanceState.getSerializable("room_list");
+            repository = new RoomRepository(savedList);
+        } else {
+            repository = new RoomRepository();
         }
         
         setupRecyclerView();
@@ -82,7 +79,7 @@ public class MainActivity extends AppCompatActivity implements RoomAdapter.OnIte
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putSerializable("room_list", roomList);
+        outState.putSerializable("room_list", (ArrayList<Room>) repository.getRoomList());
     }
 
     private void initViews() {
@@ -90,15 +87,8 @@ public class MainActivity extends AppCompatActivity implements RoomAdapter.OnIte
         fabAdd = findViewById(R.id.fabAdd);
     }
 
-    private void initData() {
-        roomList = new ArrayList<>();
-        roomList.add(new Room("P101", "Phòng 101 - Lầu 1", 1500000, false, "", ""));
-        roomList.add(new Room("P102", "Phòng 102 - Lầu 1", 2000000, true, "Nguyễn Văn An", "0987.654.321"));
-        roomList.add(new Room("P201", "Phòng 201 - Lầu 2", 1800000, false, "", ""));
-    }
-
     private void setupRecyclerView() {
-        adapter = new RoomAdapter(roomList, this);
+        adapter = new RoomAdapter(repository.getRoomList(), this);
         rvRooms.setLayoutManager(new LinearLayoutManager(this));
         rvRooms.setAdapter(adapter);
     }
@@ -146,6 +136,8 @@ public class MainActivity extends AppCompatActivity implements RoomAdapter.OnIte
         TextInputLayout tilId = (TextInputLayout) etId.getParent().getParent();
         TextInputLayout tilName = (TextInputLayout) etName.getParent().getParent();
         TextInputLayout tilPrice = (TextInputLayout) etPrice.getParent().getParent();
+        TextInputLayout tilRenter = (TextInputLayout) etRenter.getParent().getParent();
+        TextInputLayout tilPhone = (TextInputLayout) etPhone.getParent().getParent();
 
         etPrice.addTextChangedListener(new TextWatcher() {
             private String current = "";
@@ -207,22 +199,19 @@ public class MainActivity extends AppCompatActivity implements RoomAdapter.OnIte
             String phone = etPhone.getText().toString().trim();
 
             boolean hasError = false;
+            
+            // Validate ID
             if (TextUtils.isEmpty(id)) {
                 tilId.setError("Vui lòng nhập mã phòng");
                 hasError = true;
+            } else if (!isEdit && repository.isIdExists(id)) {
+                tilId.setError("Mã phòng đã tồn tại");
+                hasError = true;
             } else {
                 tilId.setError(null);
-                if (!isEdit) {
-                    for (Room r : roomList) {
-                        if (r.getId().equalsIgnoreCase(id)) {
-                            tilId.setError("Mã phòng đã tồn tại");
-                            hasError = true;
-                            break;
-                        }
-                    }
-                }
             }
 
+            // Validate Name
             if (TextUtils.isEmpty(name)) {
                 tilName.setError("Vui lòng nhập tên phòng");
                 hasError = true;
@@ -230,6 +219,7 @@ public class MainActivity extends AppCompatActivity implements RoomAdapter.OnIte
                 tilName.setError(null);
             }
 
+            // Validate Price
             if (TextUtils.isEmpty(priceStr)) {
                 tilPrice.setError("Vui lòng nhập giá phòng");
                 hasError = true;
@@ -237,15 +227,27 @@ public class MainActivity extends AppCompatActivity implements RoomAdapter.OnIte
                 tilPrice.setError(null);
             }
 
+            // Validate Renter Info if rented
             if (isRented) {
                 if (TextUtils.isEmpty(renter)) {
-                    etRenter.setError("Vui lòng nhập tên khách");
+                    tilRenter.setError("Vui lòng nhập tên khách");
                     hasError = true;
+                } else {
+                    tilRenter.setError(null);
                 }
+                
                 if (TextUtils.isEmpty(phone)) {
-                    etPhone.setError("Vui lòng nhập SĐT");
+                    tilPhone.setError("Vui lòng nhập SĐT");
                     hasError = true;
+                } else if (phone.length() < 10 || phone.length() > 11) {
+                    tilPhone.setError("SĐT không hợp lệ (10-11 số)");
+                    hasError = true;
+                } else {
+                    tilPhone.setError(null);
                 }
+            } else {
+                tilRenter.setError(null);
+                tilPhone.setError(null);
             }
 
             if (hasError) return;
@@ -261,9 +263,10 @@ public class MainActivity extends AppCompatActivity implements RoomAdapter.OnIte
                     adapter.notifyItemChanged(position);
                     Toast.makeText(this, "Cập nhật thành công", Toast.LENGTH_SHORT).show();
                 } else {
-                    roomList.add(new Room(id, name, price, isRented, isRented ? renter : "", isRented ? phone : ""));
-                    adapter.notifyItemInserted(roomList.size() - 1);
-                    rvRooms.smoothScrollToPosition(roomList.size() - 1);
+                    Room newRoom = new Room(id, name, price, isRented, isRented ? renter : "", isRented ? phone : "");
+                    repository.addRoom(newRoom);
+                    adapter.notifyItemInserted(repository.getRoomList().size() - 1);
+                    rvRooms.smoothScrollToPosition(repository.getRoomList().size() - 1);
                     Toast.makeText(this, "Thêm phòng thành công", Toast.LENGTH_SHORT).show();
                 }
                 dialog.dismiss();
@@ -280,23 +283,23 @@ public class MainActivity extends AppCompatActivity implements RoomAdapter.OnIte
 
     @Override
     public void onItemClick(Room room, int position) {
-        if (position >= 0 && position < roomList.size()) {
+        if (position >= 0 && position < repository.getRoomList().size()) {
             showRoomDialog(room, position);
         }
     }
 
     @Override
     public void onItemLongClick(Room room, int position) {
-        if (position < 0 || position >= roomList.size()) return;
+        if (position < 0 || position >= repository.getRoomList().size()) return;
         
         new MaterialAlertDialogBuilder(this)
                 .setTitle("Xác nhận xóa")
                 .setMessage("Bạn có chắc chắn muốn xóa " + room.getName() + " khỏi danh sách?")
                 .setPositiveButton("Xóa ngay", (dialog, which) -> {
-                    if (position < roomList.size()) {
-                        roomList.remove(position);
+                    if (position < repository.getRoomList().size()) {
+                        repository.deleteRoom(position);
                         adapter.notifyItemRemoved(position);
-                        adapter.notifyItemRangeChanged(position, roomList.size());
+                        adapter.notifyItemRangeChanged(position, repository.getRoomList().size());
                         Toast.makeText(this, "Đã xóa phòng", Toast.LENGTH_SHORT).show();
                     }
                 })

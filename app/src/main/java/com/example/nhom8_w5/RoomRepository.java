@@ -51,4 +51,24 @@ public class RoomRepository {
         }
         return false;
     }
+
+    public int getTotalRooms() {
+        return roomList.size();
+    }
+
+    public int getRentedRooms() {
+        int count = 0;
+        for (Room r : roomList) {
+            if (r.isRented()) count++;
+        }
+        return count;
+    }
+
+    public double getTotalRevenue() {
+        double total = 0;
+        for (Room r : roomList) {
+            if (r.isRented()) total += r.getPrice();
+        }
+        return total;
+    }
 }

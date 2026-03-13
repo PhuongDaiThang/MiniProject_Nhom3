@@ -36,6 +36,7 @@ import com.google.android.material.textfield.TextInputLayout;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * View + thin Controller glue (MVC):
@@ -61,7 +62,13 @@ public class MainActivity extends AppCompatActivity implements RoomAdapter.OnIte
     private boolean isDarkMode = false;
     private final DecimalFormat decimalFormat = new DecimalFormat("###,###,###");
 
+<<<<<<< HEAD
+    // Statistics Views
+    private TextView tvTotalRevenue, tvTotalRooms, tvAvailableRooms, tvRentedRooms;
+    private LinearLayout llEmptyState;
+=======
     // ==================== Lifecycle ====================
+>>>>>>> fd0c83c6a18589f75d4d02da4ea5e8204ecc7b3d
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,11 +88,15 @@ public class MainActivity extends AppCompatActivity implements RoomAdapter.OnIte
         initViews();
         initController(savedInstanceState);
         setupRecyclerView();
+<<<<<<< HEAD
+        updateUI();
+=======
         setupChipFilter();
         setupSearch();
         updateStats();
 
         fabAdd.setOnClickListener(v -> showRoomDialog(null));
+>>>>>>> fd0c83c6a18589f75d4d02da4ea5e8204ecc7b3d
 
         rvRooms.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -106,6 +117,17 @@ public class MainActivity extends AppCompatActivity implements RoomAdapter.OnIte
     // ==================== Init ====================
 
     private void initViews() {
+<<<<<<< HEAD
+        rvRooms = findViewById(R.id.rvRooms);
+        fabAdd = findViewById(R.id.fabAdd);
+        
+        // Stats views
+        tvTotalRevenue = findViewById(R.id.tvTotalRevenue);
+        tvTotalRooms = findViewById(R.id.tvTotalRooms);
+        tvAvailableRooms = findViewById(R.id.tvAvailableRooms);
+        tvRentedRooms = findViewById(R.id.tvRentedRooms);
+        llEmptyState = findViewById(R.id.llEmptyState);
+=======
         rvRooms        = findViewById(R.id.rvRooms);
         fabAdd         = findViewById(R.id.fabAdd);
         searchView     = findViewById(R.id.searchView);
@@ -130,6 +152,7 @@ public class MainActivity extends AppCompatActivity implements RoomAdapter.OnIte
             repository = new RoomRepository();
         }
         controller = new RoomController(repository);
+>>>>>>> fd0c83c6a18589f75d4d02da4ea5e8204ecc7b3d
     }
 
     private void setupRecyclerView() {
@@ -139,6 +162,21 @@ public class MainActivity extends AppCompatActivity implements RoomAdapter.OnIte
         updateEmptyState();
     }
 
+<<<<<<< HEAD
+    private void updateUI() {
+        // Update Stats
+        tvTotalRevenue.setText(decimalFormat.format(repository.getTotalRevenue()) + " VNĐ");
+        tvTotalRooms.setText(String.valueOf(repository.getTotalRooms()));
+        tvRentedRooms.setText(String.valueOf(repository.getRentedRooms()));
+        tvAvailableRooms.setText(String.valueOf(repository.getTotalRooms() - repository.getRentedRooms()));
+
+        // Update Empty State
+        if (repository.getRoomList().isEmpty()) {
+            llEmptyState.setVisibility(View.VISIBLE);
+            rvRooms.setVisibility(View.GONE);
+        } else {
+            llEmptyState.setVisibility(View.GONE);
+=======
     // ==================== Search ====================
 
     private void setupSearch() {
@@ -202,12 +240,16 @@ public class MainActivity extends AppCompatActivity implements RoomAdapter.OnIte
             rvRooms.setVisibility(View.GONE);
         } else {
             tvEmptyState.setVisibility(View.GONE);
+>>>>>>> fd0c83c6a18589f75d4d02da4ea5e8204ecc7b3d
             rvRooms.setVisibility(View.VISIBLE);
         }
     }
 
+<<<<<<< HEAD
+=======
     // ==================== Menu ====================
 
+>>>>>>> fd0c83c6a18589f75d4d02da4ea5e8204ecc7b3d
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main_menu, menu);
@@ -387,10 +429,14 @@ public class MainActivity extends AppCompatActivity implements RoomAdapter.OnIte
                     controller.addRoom(newRoom);
                     Toast.makeText(this, "Thêm phòng thành công!", Toast.LENGTH_SHORT).show();
                 }
+<<<<<<< HEAD
+                updateUI();
+=======
 
                 adapter.notifyDataSetChanged();
                 updateStats();
                 updateEmptyState();
+>>>>>>> fd0c83c6a18589f75d4d02da4ea5e8204ecc7b3d
                 dialog.dismiss();
 
             } catch (NumberFormatException e) {
@@ -415,6 +461,17 @@ public class MainActivity extends AppCompatActivity implements RoomAdapter.OnIte
     public void onItemLongClick(Room room, int position) {
         new MaterialAlertDialogBuilder(this)
                 .setTitle("Xác nhận xóa")
+<<<<<<< HEAD
+                .setMessage("Bạn có chắc chắn muốn xóa " + room.getName() + " khỏi danh sách?")
+                .setPositiveButton("Xóa ngay", (dialog, which) -> {
+                    if (position < repository.getRoomList().size()) {
+                        repository.deleteRoom(position);
+                        adapter.notifyItemRemoved(position);
+                        adapter.notifyItemRangeChanged(position, repository.getRoomList().size());
+                        updateUI();
+                        Toast.makeText(this, "Đã xóa phòng", Toast.LENGTH_SHORT).show();
+                    }
+=======
                 .setMessage("Bạn có chắc muốn xóa \"" + room.getName() + "\" khỏi danh sách?")
                 .setPositiveButton("Xóa ngay", (dlg, which) -> {
                     controller.deleteRoom(room);
@@ -422,6 +479,7 @@ public class MainActivity extends AppCompatActivity implements RoomAdapter.OnIte
                     updateStats();
                     updateEmptyState();
                     Toast.makeText(this, "Đã xóa phòng", Toast.LENGTH_SHORT).show();
+>>>>>>> fd0c83c6a18589f75d4d02da4ea5e8204ecc7b3d
                 })
                 .setNegativeButton("Hủy", null)
                 .show();

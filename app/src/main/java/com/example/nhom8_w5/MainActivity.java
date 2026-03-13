@@ -31,6 +31,7 @@ import com.google.android.material.textfield.TextInputLayout;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements RoomAdapter.OnItemClickListener {
 
@@ -40,6 +41,10 @@ public class MainActivity extends AppCompatActivity implements RoomAdapter.OnIte
     private RoomAdapter adapter;
     private boolean isDarkMode = false;
     private final DecimalFormat decimalFormat = new DecimalFormat("###,###,###");
+
+    // Statistics Views
+    private TextView tvTotalRevenue, tvTotalRooms, tvAvailableRooms, tvRentedRooms;
+    private LinearLayout llEmptyState;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,6 +69,7 @@ public class MainActivity extends AppCompatActivity implements RoomAdapter.OnIte
         }
         
         setupRecyclerView();
+        updateUI();
 
         fabAdd.setOnClickListener(v -> showRoomDialog(null, -1));
         
@@ -85,12 +91,36 @@ public class MainActivity extends AppCompatActivity implements RoomAdapter.OnIte
     private void initViews() {
         rvRooms = findViewById(R.id.rvRooms);
         fabAdd = findViewById(R.id.fabAdd);
+        
+        // Stats views
+        tvTotalRevenue = findViewById(R.id.tvTotalRevenue);
+        tvTotalRooms = findViewById(R.id.tvTotalRooms);
+        tvAvailableRooms = findViewById(R.id.tvAvailableRooms);
+        tvRentedRooms = findViewById(R.id.tvRentedRooms);
+        llEmptyState = findViewById(R.id.llEmptyState);
     }
 
     private void setupRecyclerView() {
         adapter = new RoomAdapter(repository.getRoomList(), this);
         rvRooms.setLayoutManager(new LinearLayoutManager(this));
         rvRooms.setAdapter(adapter);
+    }
+
+    private void updateUI() {
+        // Update Stats
+        tvTotalRevenue.setText(decimalFormat.format(repository.getTotalRevenue()) + " VNĐ");
+        tvTotalRooms.setText(String.valueOf(repository.getTotalRooms()));
+        tvRentedRooms.setText(String.valueOf(repository.getRentedRooms()));
+        tvAvailableRooms.setText(String.valueOf(repository.getTotalRooms() - repository.getRentedRooms()));
+
+        // Update Empty State
+        if (repository.getRoomList().isEmpty()) {
+            llEmptyState.setVisibility(View.VISIBLE);
+            rvRooms.setVisibility(View.GONE);
+        } else {
+            llEmptyState.setVisibility(View.GONE);
+            rvRooms.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
@@ -269,6 +299,7 @@ public class MainActivity extends AppCompatActivity implements RoomAdapter.OnIte
                     rvRooms.smoothScrollToPosition(repository.getRoomList().size() - 1);
                     Toast.makeText(this, "Thêm phòng thành công", Toast.LENGTH_SHORT).show();
                 }
+                updateUI();
                 dialog.dismiss();
             } catch (NumberFormatException e) {
                 tilPrice.setError("Giá phòng không hợp lệ");
@@ -300,6 +331,7 @@ public class MainActivity extends AppCompatActivity implements RoomAdapter.OnIte
                         repository.deleteRoom(position);
                         adapter.notifyItemRemoved(position);
                         adapter.notifyItemRangeChanged(position, repository.getRoomList().size());
+                        updateUI();
                         Toast.makeText(this, "Đã xóa phòng", Toast.LENGTH_SHORT).show();
                     }
                 })

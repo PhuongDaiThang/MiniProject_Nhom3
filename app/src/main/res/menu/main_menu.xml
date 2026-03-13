@@ -1,9 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <!-- Đổi giao diện sáng/tối -->
     <item
         android:id="@+id/action_theme"
         android:icon="@android:drawable/ic_menu_compass"
         android:title="Đổi giao diện"
         app:showAsAction="ifRoom" />
+
+    <!-- Sắp xếp -->
+    <item
+        android:id="@+id/action_sort"
+        android:icon="@android:drawable/ic_menu_sort_by_size"
+        android:title="Sắp xếp"
+        app:showAsAction="ifRoom">
+
+        <menu>
+            <item
+                android:id="@+id/action_sort_default"
+                android:title="Mặc định" />
+            <item
+                android:id="@+id/action_sort_name_asc"
+                android:title="Tên: A → Z" />
+            <item
+                android:id="@+id/action_sort_name_desc"
+                android:title="Tên: Z → A" />
+            <item
+                android:id="@+id/action_sort_price_asc"
+                android:title="Giá: Thấp → Cao" />
+            <item
+                android:id="@+id/action_sort_price_desc"
+                android:title="Giá: Cao → Thấp" />
+        </menu>
+    </item>
+
 </menu>

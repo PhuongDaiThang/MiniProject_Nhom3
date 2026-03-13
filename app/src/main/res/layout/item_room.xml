@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginHorizontal="16dp"
-    android:layout_marginVertical="8dp"
+    android:layout_marginVertical="6dp"
     app:cardBackgroundColor="@color/card_background"
     app:cardCornerRadius="16dp"
     app:cardElevation="2dp"
@@ -16,25 +16,43 @@
         android:orientation="vertical"
         android:padding="16dp">
 
+        <!-- Header: tên phòng + badge trạng thái -->
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <TextView
-                android:id="@+id/tvRoomName"
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentStart="true"
-                android:text="Phòng 101"
-                android:textColor="@color/text_primary"
-                android:textSize="20sp"
-                android:textStyle="bold" />
+                android:layout_centerVertical="true"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tvRoomName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Phòng 101"
+                    android:textColor="@color/text_primary"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvRoomId"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:text="Mã: P101"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="12sp" />
+            </LinearLayout>
 
             <TextView
                 android:id="@+id/tvStatusLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
                 android:background="@drawable/bg_status_badge"
                 android:paddingHorizontal="12dp"
                 android:paddingVertical="4dp"
@@ -43,12 +61,14 @@
                 android:textStyle="bold" />
         </RelativeLayout>
 
+        <!-- Divider -->
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:layout_marginVertical="12dp"
             android:background="@color/divider_color" />
 
+        <!-- Giá thuê -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -63,22 +83,25 @@
 
             <TextView
                 android:id="@+id/tvRoomPrice"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
+                android:layout_weight="1"
                 android:text="2.500.000 VNĐ"
                 android:textColor="@color/primary"
                 android:textSize="16sp"
                 android:textStyle="bold" />
         </LinearLayout>
 
+        <!-- Thông tin người thuê (ẩn khi trống) -->
         <LinearLayout
             android:id="@+id/llRenterInfo"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:gravity="center_vertical"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:visibility="gone">
 
             <ImageView
                 android:layout_width="18dp"
@@ -100,9 +123,22 @@
                 android:id="@+id/tvPhone"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="4dp"
                 android:text="0987.654.321"
                 android:textColor="@color/text_secondary"
                 android:textSize="14sp" />
+
+            <!-- Nút gọi điện -->
+            <ImageButton
+                android:id="@+id/btnCall"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:background="@drawable/bg_call_button"
+                android:padding="8dp"
+                android:src="@android:drawable/stat_sys_phone_call"
+                android:contentDescription="Gọi điện"
+                app:tint="@color/white"
+                android:visibility="gone" />
         </LinearLayout>
 
     </LinearLayout>
